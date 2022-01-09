@@ -2,6 +2,4 @@ requests
 datetime
 bs4
 configparser
-io
-email
 smtplib
