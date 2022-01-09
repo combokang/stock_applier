@@ -1,0 +1,6 @@
+requests
+datetime
+bs4
+configparser
+email.message
+smtplib
