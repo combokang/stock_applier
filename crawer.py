@@ -75,7 +75,7 @@ with open("stock_list.txt", mode="w", encoding="utf-8") as file:
                 continue
             else:
                 if obj_state != "0" and line[3] not in obj_state.split(
-                    " "
+                    ","
                 ):  # 進行狀態篩選，且狀態不符
                     continue
                 else:

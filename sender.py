@@ -1,21 +1,25 @@
 import email.message
 import datetime
 import smtplib
+import configparser
 
 import crawer
 
-# 建立變數
-receiver = "hiromoto1995@gmail.com"
 today = datetime.date.today().strftime("%Y/%m/%d")
+
+# 讀取篩選條件
+config = configparser.ConfigParser()
+config.read("config.ini", encoding="utf-8")
+receiver = config["email"]["receiver"]
 
 # 設定郵件內容
 msg = email.message.EmailMessage()
 msg["From"] = "stockapplyhelper@gmail.com"
 msg["To"] = "stockapplyhelper@gmail.com"
 msg["BCC"] = receiver
-msg["Subject"] = f"{today} 股票申購標的test"
-# with open("stock_list.txt", mode="r", encoding="utf-8") as file:
-#     msg.set_content(file.read())
+msg["Subject"] = f"{today} 股票申購標的"
+
+# 信件html內文
 with open("stock_list.txt", mode="r", encoding="utf-8") as file:
     readlines = file.readlines()
     htmlmsg = f"""
