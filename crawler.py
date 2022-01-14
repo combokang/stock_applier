@@ -1,21 +1,31 @@
 import requests
 from bs4 import BeautifulSoup
 import configparser
+import datetime
+import sys
+import random
+import time
+
+# 若今天為星期日則不執行爬蟲
+if datetime.date.today().weekday() == 6:
+    sys.exit("星期日不執行")
 
 print("開始抓取網頁資料，請稍後...")
 
-# 抓取網頁資料
+# 增加亂數延遲，模擬使用者
+time.sleep(random.randint(0, 10))
+
+# 抓取網頁資料，附加headers
 url = "https://histock.tw/stock/public.aspx"  # 資料來源：嗨投資 網站
-data = requests.get(url)
+data = requests.get(url, headers={
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36"})
 soup = BeautifulSoup(data.text, "html.parser")
-stock_table = soup.find("table")  # 原始股票申購表格
-org_list = stock_table.find_all("tr")  # 原始股票列表(首列為標題列)
+org_list = soup.find("table").find_all("tr")  # 原始股票列表的html(首列為標題列)
 
 
-# 篩選欄位，建立股票資料
-stock_list = []
-i = 0  # index
-for stock in org_list[1:]:
+# 處理html、篩選欄位，建立股票資料
+stock_list = []  # 處理過的股票列表(二階巢狀)
+for stock in org_list[1:]:  # for迴圈處理每筆股票的html、篩選欄位
     td = stock.find_all("td")
     name = td[1].find("a").string.replace("\xa0", " ")  # [0]股票代號+名稱(字串)
     selling_price = td[6].string.strip()  # [1]承銷價(字串)
@@ -26,15 +36,15 @@ for stock in org_list[1:]:
     try:
         state = td[13].find("span").string  # [3]申購狀態(字串)
     except:
-        state = "未開始"  # 無狀態則視為未開始
-    single_stock = [name, selling_price, gain, state]
-    stock_list.append(single_stock)
+        state = "未開始"  # 無狀態則賦予狀態為未開始
+    single_stock = [name, selling_price, gain, state]   # 單筆股票資訊
+    stock_list.append(single_stock)  # 將單筆股票加入處理結果
 
-# 讀取篩選條件
+# 從config讀取篩選條件
 config = configparser.ConfigParser()
 config.read("config.ini", encoding="utf-8")
 
-# 寫入檔案
+# 將搜尋結果寫入stock_list.txt檔案
 with open("stock_list.txt", mode="w", encoding="utf-8") as file:
     # 寫入篩選條件與文字敘述
     try:
@@ -69,9 +79,11 @@ with open("stock_list.txt", mode="w", encoding="utf-8") as file:
     file.write(title + "\n")
 
     # 寫入股票
+    COUNT = 0  # 篩選結果筆數
     for line in stock_list:  # 每筆股票
         if min_gain <= int(line[2]):  # 進行最低總獲利篩選
-            if max_price != 0 and max_price < float(line[1]):  # 進行最高承銷價篩選，且價格不符
+            # 進行最高承銷價篩選，且價格不符
+            if max_price != 0 and max_price < float(line[1]):
                 continue
             else:
                 if obj_state != "0" and line[3] not in obj_state.split(
@@ -82,3 +94,8 @@ with open("stock_list.txt", mode="w", encoding="utf-8") as file:
                     line_str = "\t".join(line)
                     print(line_str)
                     file.write(line_str + "\n")
+                    COUNT += 1
+    # 將最終筆數寫入檔案並印出
+    str = f"共 {COUNT} 筆結果"
+    print(str)
+    file.write(str)

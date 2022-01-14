@@ -1,5 +1,2 @@
->>每日寄信timer
->>部屬雲端
 >>try catch錯誤 (traceback)
 >>錯誤log (logging套件)
-test
