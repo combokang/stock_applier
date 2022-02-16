@@ -5,7 +5,7 @@ import configparser
 
 import crawler
 
-today_str = datetime.date.today().strftime("%Y/%m/%d")
+today_str = datetime.date.today().strftime("%Y/%m/%d")  # 今天日期
 
 # 讀取config中的email設定
 config = configparser.ConfigParser()
@@ -22,10 +22,10 @@ msg["BCC"] = receiver
 # 信件html內文列出 篩選條件 和 符合條件的股票
 htmlmsg = f"<p>{crawler.PRICE_FILTER_STR}<br>{crawler.GAIN_FILTER_STR}<br>{crawler.STATE_FILTER_STR}</p>"
 if crawler.COUNT == 0:  # 若結果為0筆
-    msg["Subject"] = f"【股票申購助手】{today_str} 今日無符合條件的股票可申購"
+    msg["Subject"] = f"【申購助手】{today_str} 今日無符合條件的股票可申購"
     htmlmsg += "<p>今日無符合條件的股票可申購</p>"
 else:
-    msg["Subject"] = f"【股票申購助手】{today_str} 股票申購標的"
+    msg["Subject"] = f"【申購助手】{today_str} 股票申購標的"
     htmlmsg += """
     <p>符合條件的可申購股票:</p>
     <table border=\"1\" style=\"border-collapse: collapse\">

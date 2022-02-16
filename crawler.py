@@ -27,12 +27,15 @@ html_list = soup.find("table").find_all("tr")  # 原始股票列表的html(首�
 stock_list = []  # 處理過的股票列表(二階巢狀)
 for stock in html_list[1:]:  # for迴圈處理每筆股票的html、篩選欄位
     td = stock.find_all("td")
-    name = td[1].find("a").string.replace("\xa0", " ")  # [0]股票代號+名稱(字串)
+    if td[1].find("a") != None:
+        name = td[1].find("a").string.replace("\xa0", " ")  # [0]股票代號+名稱(字串)
+    else:
+        name = td[1].string.replace("\xa0", " ")
     selling_price = float(td[6].string.strip())  # [1]承銷價
     try:
         gain = int(td[8].find("span").string.replace(",", ""))  # [2]申購總獲利
     except:
-        gain = "0"
+        gain = 0
     try:
         state = td[13].find("span").string  # [3]申購狀態(字串)
     except:
