@@ -42,7 +42,7 @@ msg.add_alternative(htmlmsg, subtype="html")
 
 # 連接gmail server
 server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-server.login("stockapplyhelper@gmail.com", "python2021practice")
+server.login("stockapplyhelper@gmail.com", "pivpzplyieecnqxn")
 server.send_message(msg)
 server.close
 
