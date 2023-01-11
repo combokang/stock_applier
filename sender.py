@@ -11,11 +11,12 @@ today_str = datetime.date.today().strftime("%Y/%m/%d")  # 今天日期
 config = configparser.ConfigParser()
 config.read("config.ini", encoding="utf-8")
 receiver = config["email"]["receiver"]
+helper_email = config["email"]["sender"]
 
 # 設定郵件基礎內容
 msg = email.message.EmailMessage()
-msg["From"] = "stockapplyhelper@gmail.com"
-msg["To"] = "stockapplyhelper@gmail.com"
+msg["From"] = helper_email
+msg["To"] = helper_email
 msg["BCC"] = receiver
 
 # 依結果是否為0筆決定信件標題，且0筆時以文字取代表格進行提示
@@ -42,7 +43,7 @@ msg.add_alternative(htmlmsg, subtype="html")
 
 # 連接gmail server
 server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-server.login(config["email"]["sender"], config["password"]["pw"])
+server.login(helper_email, config["password"]["pw"])
 server.send_message(msg)
 server.close
 
